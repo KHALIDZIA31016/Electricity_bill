@@ -23,13 +23,29 @@ class SubmissionRecord extends StatefulWidget {
 class _SubmissionRecordState extends State<SubmissionRecord> {
   final interstitialAdController = Get.find<InterstitialAdController>();
   final BannerAdController bannerAdController = Get.find<BannerAdController>();
+  bool isBannerVisible = true;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
+
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
     interstitialAdController.checkAndShowAdOnVisit();
-    bannerAdController.loadBannerAd('ad2');
+    bannerAdController.loadBannerAd('ad1');
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +64,9 @@ class _SubmissionRecordState extends State<SubmissionRecord> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad2'),
-      ),
+      bottomNavigationBar: isBannerVisible
+          ? SizedBox(width: double.infinity, child: bannerAdController.getBannerAdWidget('ad1'),)
+          : SizedBox.shrink(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),

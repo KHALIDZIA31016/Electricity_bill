@@ -23,7 +23,7 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
   final BannerAdController bannerAdController = Get.find<BannerAdController>();
   final interstitialAdController = Get.find<InterstitialAdController>();
   late List<Map<String, dynamic>> results;
-
+  bool isBannerVisible = true;
   String selectedOption = 'Single battery';
   final List<String> options = ['Single battery', 'Parallel battery', 'Series battery'];
 
@@ -36,14 +36,27 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
   String batteryCapacity = '';
   String dischargeSafety = '';
   String efficiency = '';
-
   @override
   void initState() {
     super.initState();
     results = List.from(widget.results);
-      bannerAdController.loadBannerAd('ad5');
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
+
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
     interstitialAdController.checkAndShowAdOnVisit();
+    bannerAdController.loadBannerAd('ad1');
   }
+
 
   Widget _buildDropdown(String title, String value, List<String> items, Function(String?) onChanged) {
     return CustomContainer(
@@ -147,10 +160,9 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
           ),
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
-      ),
+        bottomNavigationBar: isBannerVisible
+            ? SizedBox(width: double.infinity, child: bannerAdController.getBannerAdWidget('ad1'),)
+            : SizedBox.shrink(),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: SingleChildScrollView(

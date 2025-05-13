@@ -15,6 +15,7 @@ import '../../../core/widgets/custom_container.dart';
 import '../../../core/widgets/custom_drawer.dart';
 import '../../../gen/assets.gen.dart';
 import '../../electricity_calculator/view/electricity_calculator_view.dart';
+import '../../net_metering/net_metering.dart';
 import '../homeTabs/BillsCheckTab/view/bill_checkTab_view.dart';
 import '../homeTabs/CalculatorTab/view/CalculatorTab_view.dart';
 import '../homeTabs/SolarPanelTab/view/bill_checkTab_view.dart';
@@ -70,13 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return WillPopScope(
       onWillPop: _onWillPop, // Use the async method for handling back buttons
       child: Scaffold(
-        bottomNavigationBar: CustomContainer(
-          width: double.infinity,
-          // Conditionally display the ad based on _isAdVisible
-          child: _isAdVisible && bannerAdController.getBannerAdWidget('ad5') != null
-              ? bannerAdController.getBannerAdWidget('ad5')
-              : SizedBox.shrink(), // Show an empty box when ad is hidden
-        ),
         backgroundColor: AppColors.kWhite,
         appBar: PreferredSize(
           preferredSize: Size(0, 70),
@@ -193,7 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+        bottomNavigationBar: CustomContainer(
+          width: double.infinity,
+          child: _isAdVisible || interstitialAdController.showInterstitialAd
+              ? bannerAdController.getBannerAdWidget('ad5')
+              : SizedBox.shrink(),
+        ),
       ),
     );
   }
 }
+
+

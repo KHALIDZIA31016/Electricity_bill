@@ -22,14 +22,28 @@ class _ShowResultScreenState extends State<ShowResultScreen> {
   final interstitialAdController = Get.find<InterstitialAdController>();
 
   List<Map<String, dynamic>> deviceList = [];
+  bool isBannerVisible = true;
+
 
   @override
   void initState() {
     super.initState();
     fetchStoredData();
-    bannerAdController.loadBannerAd('ad5');
-    interstitialAdController.checkAndShowAdOnVisit();
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
 
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
+    interstitialAdController.checkAndShowAdOnVisit();
+    bannerAdController.loadBannerAd('ad1');
   }
 
   Future<void> fetchStoredData() async {
@@ -88,10 +102,9 @@ class _ShowResultScreenState extends State<ShowResultScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomContainer(
-        width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad5')
-      ),
+      bottomNavigationBar: isBannerVisible
+          ? SizedBox(width: double.infinity, child: bannerAdController.getBannerAdWidget('ad1'),)
+          : SizedBox.shrink(),
       body: deviceList.isEmpty
           ? Center(child: Text("No devices saved yet."))
           : SingleChildScrollView(

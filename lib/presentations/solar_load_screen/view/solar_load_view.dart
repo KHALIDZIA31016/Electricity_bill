@@ -38,15 +38,31 @@ class _SolarLoadViewState extends State<SolarLoadView> {
   ];
   final int panelCapacity = 350;
   final List<Map<String, dynamic>> _submissions = [];
+  bool isBannerVisible = true;
 
   @override
   void initState() {
     super.initState();
     _initializeControllers();
     _loadSubmissions();
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
+
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
     interstitialAdController.checkAndShowAdOnVisit();
-    bannerAdController.loadBannerAd('ad3');
+    bannerAdController.loadBannerAd('ad1');
   }
+
+
 
   void _initializeControllers() {
     final List<int> sectionLengths = [3, 4, 8, 1];
@@ -252,10 +268,9 @@ class _SolarLoadViewState extends State<SolarLoadView> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad3'),
-      ),
+      bottomNavigationBar: isBannerVisible
+          ? SizedBox(width: double.infinity, child: bannerAdController.getBannerAdWidget('ad1'),)
+          : SizedBox.shrink(),
       body: Column(
         children: [
           _buildStepper(),

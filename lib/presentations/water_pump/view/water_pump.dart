@@ -22,11 +22,10 @@ class WaterPumpCalculator extends StatefulWidget {
 class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
   final BannerAdController bannerAdController = Get.find<BannerAdController>();
   final interstitialAdController = Get.find<InterstitialAdController>();
-
   final _dischargeController = TextEditingController();
   final _headController = TextEditingController();
   double _horsepower = 0.0;
-
+  bool isBannerVisible = true;
   void _calculateHorsepower() {
     if (_dischargeController.text.isNotEmpty && _headController.text.isNotEmpty) {
       if (double.tryParse(_dischargeController.text) != null &&
@@ -57,22 +56,26 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
       );
     }
   }
-
-  void _resetFields() {
-    _dischargeController.clear();
-    _headController.clear();
-    setState(() {
-      _horsepower = 0.0;
-    });
-  }
   @override
   void initState() {
     super.initState();
 
-    bannerAdController.loadBannerAd('ad5');
-    interstitialAdController.checkAndShowAdOnVisit();
-  }
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
 
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
+    interstitialAdController.checkAndShowAdOnVisit();
+    bannerAdController.loadBannerAd('ad5');
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,10 +95,12 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
+        bottomNavigationBar: isBannerVisible
+          ? SizedBox(
         width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
-      ),
+        child: bannerAdController.getBannerAdWidget('ad5'),
+      )
+          : SizedBox.shrink(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

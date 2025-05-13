@@ -1,11 +1,6 @@
-
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -18,7 +13,6 @@ class BannerAdController extends GetxController {
   void onInit() {
     super.onInit();
     fetchRemoteConfig();
-    // loadBannerAd('large2');
   }
 
   Future<void> fetchRemoteConfig() async {
@@ -31,7 +25,7 @@ class BannerAdController extends GetxController {
       ));
       await remoteConfig.fetchAndActivate();
 
-      bool bannerAdsEnabled = remoteConfig.getBool('BannerAd');
+      bool bannerAdsEnabled = remoteConfig.getBool('banner');
       isAdEnabled.value = bannerAdsEnabled;
 
       if (bannerAdsEnabled) {

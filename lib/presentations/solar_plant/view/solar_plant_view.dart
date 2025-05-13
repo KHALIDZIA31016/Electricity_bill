@@ -51,13 +51,31 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
     },
   ];
   List<String> selectedUnits = [];
+
+  bool isBannerVisible = true;
+
   @override
   void initState() {
     super.initState();
     selectedUnits = fields.map((f) => f['unit'].toString()).toList();
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
+
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
     interstitialAdController.checkAndShowAdOnVisit();
-    bannerAdController.loadBannerAd('ad4');
+    bannerAdController.loadBannerAd('ad1');
   }
+
+
 
 
   final List<TextEditingController> controllers = List.generate(6, (_) => TextEditingController());
@@ -125,10 +143,9 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad4'),
-      ),
+      bottomNavigationBar: isBannerVisible
+          ? SizedBox(width: double.infinity, child: bannerAdController.getBannerAdWidget('ad1'),)
+          : SizedBox.shrink(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(

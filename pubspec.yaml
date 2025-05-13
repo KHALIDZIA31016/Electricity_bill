@@ -27,6 +27,7 @@ dependencies:
   geolocator: ^14.0.0
   weather: ^3.2.1
   onesignal_flutter: ^5.3.0
+  percent_indicator: ^4.2.5
   # enhance_stepper: ^1.0.2
   # tuple: ^2.0.2
 

@@ -16,7 +16,7 @@ class AcSizeCalculatorScreen extends StatefulWidget {
 class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
   final BannerAdController bannerAdController = Get.find<BannerAdController>();
   final interstitialAdController = Get.find<InterstitialAdController>();
-
+  bool isBannerVisible = true;
   final TextEditingController roomLengthController = TextEditingController();
   final TextEditingController roomWidthController = TextEditingController();
   final TextEditingController roomHeightController = TextEditingController(text: '');
@@ -41,10 +41,28 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
   String selectedWidthUnit = 'ft';
   String selectedHeightUnit = 'ft';
 
+  @override
+  void initState() {
+    super.initState();
 
+    interstitialAdController.onAdShown = () {
+      setState(() {
+        isBannerVisible = false;
+      });
+    };
+
+    interstitialAdController.onAdClosed = () {
+      setState(() {
+        isBannerVisible = true; // Show banner when ad closed
+      });
+    };
+
+    // Load initial ads
+    interstitialAdController.checkAndShowAdOnVisit();
+    bannerAdController.loadBannerAd('ad1');
+  }
   String result = '';
 
-  // Mapping temperature options to adjustment factors
   final Map<String, double> temperatureAdjustmentFactors = {
     '20°C': 1.00,
     '25°C': 1.10,
@@ -157,13 +175,6 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    bannerAdController.loadBannerAd('ad5');
-    interstitialAdController.checkAndShowAdOnVisit();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -181,10 +192,12 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
+        bottomNavigationBar: isBannerVisible
+          ? SizedBox(
         width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad5'),
-      ),
+        child: bannerAdController.getBannerAdWidget('ad1'),
+      )
+          : SizedBox.shrink(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(

@@ -20,8 +20,9 @@ class SplashInterstitialAd extends GetxController {
 
     InterstitialAd.load(
 
-      // adUnitId: "ca-app-pub-3940256099942544/1033173712", // tested
-      adUnitId: "ca-app-pub-3118392277684870/5303340675", // actual
+      adUnitId: "ca-app-pub-3940256099942544/1033173712", // tested
+      // adUnitId: "ca-app-pub-3118392277684870/5303340675", // actual
+
 
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
